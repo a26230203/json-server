@@ -1,0 +1,66 @@
+main {
+   position: fixed;
+   top: 20%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   display: flex;
+   justify-content: center;
+   margin: auto;
+  
+}
+
+main section {
+   border: 2px solid rgb(238, 235, 235);
+   padding-top: 15px;
+   padding-left: 15px;
+   padding-right: 15px;
+   padding-bottom: 15px;
+   width: 1200px;
+}
+
+.add-btn {
+   height: 60px;
+   width: 200px;
+   background-color: rgb(238, 235, 235);
+   border: none;
+   font-weight: bold;
+   color: rgb(61, 139, 241);
+   font-size: 25px;
+   margin-bottom: 15px;
+}
+
+.eventList-header {
+   display: flex;
+   justify-content: space-between;
+   background-color: rgb(175, 213, 238);
+   padding-top: 30px;
+   padding-left: 15px;
+   padding-right: 15px;
+   font-size: 15px;
+   height: 70px;
+}
+
+
+.even-container form {
+   display: flex;
+   justify-content: space-between;
+   padding-left: 15px;
+   padding-right: 15px;
+   padding-top: 15px;
+   padding-bottom: 15px;
+   border: 1px solid rgb(221, 218, 218)
+}
+
+.even-container form input {
+   height: 30px;
+   width: 250px;
+   font-weight: bold;
+}
+
+.even-container form button {
+   border: none;
+   background-color: inherit;
+   font-size: 25px;
+   font-weight: bolder;
+   color: rgb(61, 139, 241);
+}
