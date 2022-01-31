@@ -15,6 +15,9 @@ const Api = (() => {
 const View = (() => {
     const domstr = {
         evenList: ".even-container",
+        addBtn: ".add-btn",
+        delete: ".delete",
+        edit: ".edit-btn",
     }
 
     const renders = (elm, temp) => {
@@ -22,32 +25,55 @@ const View = (() => {
     }
 
     const converDate = (time) => {
-        let date = new Date(time)
-        mnth = ("0" + (date.getMonth()+1)).slice(-2),
-        day  = ("0" + date.getDate()).slice(-2);
-        return [ date.getFullYear(), mnth, day].join("-");
+        if(time !== "") {
+            let date = new Date(time)
+            mnth = ("0" + (date.getMonth()+1)).slice(-2),
+            day  = ("0" + date.getDate()).slice(-2);
+            return [ date.getFullYear(), mnth, day].join("-");
+        }else {
+            return ""
+        }
+
     }
 
     const createTemp = (arr) => {
         let temp = ""
-        arr.forEach((date) => {
+        arr.forEach((data) => {
             temp += `
             <form>
-                <input  disabled="true" value="${date.eventName}"/>
-                <input  disabled="true" value="${converDate(+date.startDate)}"/>
-                <input  disabled="true" value="${converDate(+date.endDate)}"/>
-                <button class= "edit-btn" id="${date.id}"> EDIT </button>
-                <button class= "edit-btn" id="${date.id}"> DELETE </button>
+                <input  disabled="true" value="${data.eventName}"/>
+                <input  disabled="true" value="${converDate(+data.startDate)}"/>
+                <input  disabled="true" value="${converDate(+data.endDate)}"/>
+                <button class= "edit-btn" id="${data.id}"> EDIT </button>
+                <button class= "delete-btn" id="${data.id}"> DELETE </button>
             </form>
             `
         });
         return temp
     }
 
+    const addTemp = () => {
+        const form = document.createElement('form')
+        const input1 = document.createElement('input')
+        const input2 = document.createElement('input')
+        const input3 = document.createElement('input')
+        const save = document.createElement('button')
+        save.className = "save-btn"
+        save.innerText = "SAVE"
+        const close = document.createElement('button')
+        close.className = "close-btn"
+        close.innerText = "CLOSE"
+
+       form.append(input1, input2, input3, save, close)
+
+       return form
+    } 
+
     return {
         domstr,
         renders,
-        createTemp
+        createTemp,
+        addTemp
     }
 })()
 
@@ -97,8 +123,17 @@ const Controller = ((model, view) => {
         })
     }
 
+    const addBtn = () => {
+        const elm = document.querySelector(view.domstr.addBtn)
+        const elm2 = document.querySelector(view.domstr.evenList)
+        elm.addEventListener('click', e => {
+            elm2.append(view.addTemp())
+        })
+    }
+
     const boostrap = () => {
         init()
+        addBtn()
     }
 
     return {
