@@ -22,7 +22,7 @@ const View = (() => {
     const domstr = {
         evenList: ".even-container",
         addBtn: ".add-btn",
-        delete: ".even-container",
+        delete: ".delete-btn",
         edit: ".edit-btn",
     }
 
@@ -46,7 +46,7 @@ const View = (() => {
         let temp = ""
         arr.forEach((data) => {
             temp += `
-            <form>
+            <form class="event-form" >
                 <input  disabled="true" value="${data.eventName}"/>
                 <input  disabled="true" value="${converDate(+data.startDate)}"/>
                 <input  disabled="true" value="${converDate(+data.endDate)}"/>
@@ -105,6 +105,16 @@ const Model = ((api, view) => {
             const elm = document.querySelector(view.domstr.evenList)
             const temp = view.createTemp(newDate)
             view.renders(elm, temp)
+
+            const elm2 = document.querySelectorAll(view.domstr.delete)
+            elm2.forEach(elm => {
+                elm.addEventListener("click", e => {
+                    this.eventList = this.#eventList.filter(data => {
+                        return +data.id != + e.target.id
+                    })
+                    api.deleEvent(e.target.id)
+                })
+            })
         }
     }
 
@@ -139,20 +149,10 @@ const Controller = ((model, view) => {
         })
     }
 
-    const deldeted = () => {
-        const elm = document.querySelector(view.domstr.delete)
-        elm.addEventListener("click", (e) => {
-            state.eventList = state.eventList.filter((date) => {
-               return date.id != e.target.id
-            })
-            model.deleEvent(e.target.id)
-        })
-    }
 
     const boostrap = () => {
         init()
         addBtn()
-        deldeted()
     }
 
     return {
