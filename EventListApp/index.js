@@ -1,13 +1,19 @@
 const Api = (() => {
-    const url = 'http://localhost:3000/'
+    const url = 'http://localhost:3000'
     const path = 'events'
     const getEvent = () => {
-        return fetch([url, path].join("")).then(res => res.json())
+        return fetch([url, path].join("/")).then(res => res.json())
+    }
 
+    const deleEvent = (id) => {
+        return fetch([url, path, id].join("/"), {
+            method: "DELETE"
+        }) 
     }
 
     return {
-        getEvent
+        getEvent,
+        deleEvent,
     }
 })()
 
@@ -16,7 +22,7 @@ const View = (() => {
     const domstr = {
         evenList: ".even-container",
         addBtn: ".add-btn",
-        delete: ".delete",
+        delete: ".even-container",
         edit: ".edit-btn",
     }
 
@@ -44,8 +50,8 @@ const View = (() => {
                 <input  disabled="true" value="${data.eventName}"/>
                 <input  disabled="true" value="${converDate(+data.startDate)}"/>
                 <input  disabled="true" value="${converDate(+data.endDate)}"/>
-                <button class= "edit-btn" id="${data.id}"> EDIT </button>
-                <button class= "delete-btn" id="${data.id}"> DELETE </button>
+                <button class="edit-btn" id="${data.id}"> EDIT </button>
+                <button class="delete-btn" id="${data.id}"> DELETE </button>
             </form>
             `
         });
@@ -103,11 +109,13 @@ const Model = ((api, view) => {
     }
 
     const getEvent = api.getEvent
+    const deleEvent = api.deleEvent
 
     return {
         Event,
         State,
-        getEvent
+        getEvent,
+        deleEvent
     }
 
 })(Api, View)
@@ -131,9 +139,20 @@ const Controller = ((model, view) => {
         })
     }
 
+    const deldeted = () => {
+        const elm = document.querySelector(view.domstr.delete)
+        elm.addEventListener("click", (e) => {
+            state.eventList = state.eventList.filter((date) => {
+               return date.id != e.target.id
+            })
+            model.deleEvent(e.target.id)
+        })
+    }
+
     const boostrap = () => {
         init()
         addBtn()
+        deldeted()
     }
 
     return {
