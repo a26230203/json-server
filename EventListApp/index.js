@@ -77,10 +77,10 @@ const View = (() => {
         let temp = ""
         arr.forEach((data) => {
             temp += `
-            <div class="event-form" >
-                <input id = "input-name${data.id}"  disabled="true" value="${data.eventName}"/>
-                <input id = "start-date${data.id}" disabled="true" value="${converDate(+data.startDate)}"/>
-                <input id = "end-date${data.id}" disabled="true" value="${converDate(+data.endDate)}"/>
+            <div class="event-form">
+                <input id="input-name${data.id}"  disabled="true" value="${data.eventName}"/>
+                <input id="start-date${data.id}" disabled="true" value="${converDate(+data.startDate)}"/>
+                <input id="end-date${data.id}" disabled="true" value="${converDate(+data.endDate)}"/>
                 <button class="edit-btn" id="${data.id}" value="EDIT"> EDIT </button>
                 <button class="delete-btn" id="${data.id}" value="DELETE"> DELETE </button>
             </div>
@@ -107,14 +107,14 @@ const Model = ((api, view) => {
     }
 
     class State {
-        #eventList = []
+        #eventList = [] 
         #add = false
 
         get eventList() {
             return this.#eventList
         }
 
-        get add() {
+        get add () {
             return this.#add
         }
 
@@ -125,9 +125,9 @@ const Model = ((api, view) => {
             view.renders(elm, temp)
         }
 
-        set add(boolean) {
-            return this.#add = boolean
-        } 
+        set add (boolean) {
+             this.#add = boolean
+        }
     }
 
     const getEvent = api.getEvent
@@ -183,35 +183,38 @@ const Controller = ((model, view) => {
     
                 inputName.addEventListener('keyup', e => {
                     newEvent.eventName = e.target.value
+                    console.log(e.target.value);
                 })
         
                 statDate.addEventListener('keyup', e => {
                     const d = new Date(e.target.value)
+                    d.setDate(d.getDate()+1);
                     newEvent.startDate = d.getTime()
                 })
         
                 endDate.addEventListener('keyup', e => {
                     const d = new Date(e.target.value)
+                    d.setDate(d.getDate()+1);
                     newEvent.endDate = d.getTime()
                 })
         
-                saveBtn.addEventListener('cick', () => {
+                saveBtn.addEventListener('click', () => {
                     if(newEvent.eventName !== '' || newEvent.startDate !== '' || newEvent.endDate !== '') {
                         model.addEvent(newEvent).then(even => {
-                            state.eventList = [even, ...state.eventList]
+                            state.eventList = [...state.eventList, even]
                         })
                     }else {
                         alert('please fill all infomation')
                     }
                 })
-    
-                closeBtn.addEventListener('click', () => {
-                    const newInput = document.querySelector(view.domstr.newInput)
-                    state.add = false
-                    newInput.remove()
-                })
+                
+                    closeBtn.addEventListener('click', () => {
+                        console.log(state.add);
+                        const newInput = document.querySelector(view.domstr.newInput)
+                        state.add = false
+                        newInput.remove()
+                    })
             }
-
         })
     }
 
@@ -230,55 +233,50 @@ const Controller = ((model, view) => {
     const editEvent = () => {
         const eventContainer = document.querySelector(view.domstr.evenList);
         eventContainer.addEventListener('click', (e) => {
-            if (e.target.value === 'EDIT') {
                 const id = +e.target.id;
                 const updateEventName = document.getElementById(`input-name${id}`);
                 const updateStartDate = document.getElementById(`start-date${id}`);
                 const updateEndDate = document.getElementById(`end-date${id}`);
+                const button = document.getElementById(`${id}`)
+                let curEvent 
 
-                e.target.innerText = 'SAVE';
+                button.innerText = 'SAVE';
+
+                updateEventName.removeAttribute("disabled") ;
+                updateStartDate.removeAttribute("disabled") ;
+                updateEndDate.removeAttribute("disabled") ;
+                state.eventList.forEach((e) => {
+                    if (+e.id === id) return curEvent = e;
+                })
                 
-                if(e.target.innerText = 'SAVE') {
-                    const eventForm = document.querySelector(view.domstr.evenForm)
-                    const button = eventForm.querySelector('button')
-                    let curEvent 
-                    
-                    updateEventName.removeAttribute("disabled");
-                    updateStartDate.removeAttribute("disabled");
-                    updateEndDate.removeAttribute("disabled");
-                    state.eventList.forEach((e) => {
-                        if (+e.id === id) return curEvent = e;
-                    })
+                updateEventName.addEventListener('keyup', e => {
+                    curEvent.eventName = e.target.value
+                })
+        
+                updateStartDate.addEventListener('keyup', e => {
+                    const d = new Date(e.target.value)
+                    d.setDate(d.getDate()+1);
+                    curEvent.startDate = d.getTime()
+                })
+        
+                updateEndDate.addEventListener('keyup', e => {
+                    const d = new Date(e.target.value)
+                    d.setDate(d.getDate()+1);
+                    curEvent.endDate = d.getTime()
+                })
 
-                    updateEventName.addEventListener('keyup', e => {
-                        curEvent.eventName = e.target.value
-                    })
-            
-                    updateStartDate.addEventListener('keyup', e => {
-                        curEvent.startDate = e.target.value
-                    })
-            
-                    updateEndDate.addEventListener('keyup', e => {
-                        curEvent.endDate = e.target.value
-                    })
-
-
-                    button.addEventListener('click', e => {
-                        if(curEvent.eventName === "" || curEvent.startDate === "" || curEvent.endDate === "") {
-                            alert("please fill all infomation");
-                        }else {
-                            e.target.innerText = 'EDIT'
-                            model.editEvent(e.target.id, curEvent)
+                button.addEventListener('click', e => {
+                    if(curEvent.eventName === "" || curEvent.startDate === "" || curEvent.endDate === "") {
+                        alert("please fill all infomation");
+                    }else {
+                        button.innerText = 'EDIT'
+                        model.editEvent(e.target.id, curEvent).then(res => {
                             model.getEvent().then((data) => {
-                             return state.eventList = data
+                                return state.eventList = data
                             });
-                        }
-                    })
-
-                }
-                
-            }
-            
+                        })
+                    }
+                })      
         })
     }
 
